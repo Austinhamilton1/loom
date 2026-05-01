@@ -39,8 +39,6 @@ void free_scheduler(scheduler_t *sched) {
  */
 void scheduler_spawn(scheduler_t *sched, task_t *task) {
     if(!sched || !task) return;
-
-    task->state = Ready;
     queue_push(sched->run_queue, task);
 }
 
@@ -56,7 +54,6 @@ void scheduler_run(scheduler_t *sched) {
         sched->current = next;
 
         if(next) {
-            next->state = Running;
             context_switch(&sched->main_sp, next->sp);
         
             if(next->state == Done) {
@@ -77,7 +74,6 @@ void scheduler_run(scheduler_t *sched) {
 void scheduler_yield(scheduler_t *sched) {
     if(!sched) return;
     if(sched->current) {
-        sched->current = Waiting;
         context_switch(&sched->current->sp, sched->main_sp);
     }
 }

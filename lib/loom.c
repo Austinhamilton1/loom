@@ -26,10 +26,8 @@ void loom_deinit() {
  * Spawn a new task in the loom environment.
  * Arguments:
  *     void (*entry)() - Pointer to a function to use as entry point for new task.
- * Returns:
- *     task_t * - Pointer to task (can be used to e.g., cancel tasks if needed)
  */
-task_t *loom_spawn(void (*entry)()) {
+void loom_spawn(void (*entry)()) {
     if(global_scheduler) {
         // Create the new task
         task_t *task = init_task(entry);
@@ -37,9 +35,7 @@ task_t *loom_spawn(void (*entry)()) {
             // Spawn the task into the scheduler
             scheduler_spawn(global_scheduler, task);
         }
-        return task;
     }
-    return NULL;
 }
 
 /*
