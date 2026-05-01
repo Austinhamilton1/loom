@@ -1,14 +1,15 @@
 #ifndef LOOM_H
 #define LOOM_H
 
-#include "scheduler.h"
-
-scheduler_t *global_scheduler = NULL;
-
 /*
  * Initialize the loom environment.
  */
 void loom_init();
+
+/* 
+ * Cleanup the loom environment.
+ */
+void loom_deinit();
 
 /*
  * Spawn a new task in the loom environment.
@@ -26,5 +27,10 @@ void loom_run();
  * Yield control to the loom environment.
  */
 void loom_yield();
+
+/*
+ * Exit from a task.
+ */
+void loom_exit();
 
 #endif

@@ -23,4 +23,20 @@ typedef struct {
     void (*entry)();        // This is the task's work to complete
 } task_t;
 
+/*
+ * Initialize a task.
+ * Arguments:
+ *     void (*entry)() - Pointer to a function to run.
+ * Returns:
+ *     task_t * - New task.
+ */
+task_t *init_task(void (*entry)());
+
+/*
+ * Free a task.
+ * Arguments:
+ *     task_t *task - Self reference.
+ */
+void free_task(task_t *task);
+
 #endif

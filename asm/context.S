@@ -1,3 +1,5 @@
+.intel_syntax noprefix
+
 .global context_switch
 .type context_switch, @function
 
@@ -20,3 +22,5 @@ context_switch:
     pop rbx
 
     ret
+
+.section .note.GNU-stack,"",@progbits

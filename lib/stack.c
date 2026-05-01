@@ -16,6 +16,17 @@ char *alloc_stack() {
 }
 
 /*
+ * Free a stack.
+ * Arguments:
+ *     char *stack - Self reference.
+ */
+void free_stack(char *stack) {
+    if(stack) {
+        free(stack);
+    }
+}
+
+/*
  * Initialize a task's stack for the first call.
  * Arguments:
  *     task_t *task - Task to initialize.
@@ -23,19 +34,18 @@ char *alloc_stack() {
 void init_stack(task_t *task) {
     char *stack_top = task->stack + STACK_SIZE;
     uintptr_t sp = (uintptr_t)stack_top;
-    uintptr_t trampoline_ptr = (uintptr_t)trampoline;
 
     // Align to 16 bytes
     sp &= ~((uintptr_t)0xF);
 
     // Push return address (trampoline)
     sp -= sizeof(uintptr_t);
-    memcpy(&task->stack[sp], &trampoline_ptr, sizeof(uintptr_t));
+    *(uintptr_t *)sp = (uintptr_t)trampoline;
 
     // Push callee-saved registers (rbx, rbp, r12-r15)
     for(int i = 0; i < 6; i++) {
         sp -= sizeof(uintptr_t);
-        memset(&task->stack[sp], 0, sizeof(uint64_t));
+        *(uintptr_t *)sp = 0;
     }
 
     task->sp = sp;

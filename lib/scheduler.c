@@ -19,12 +19,28 @@ scheduler_t *init_scheduler() {
 }
 
 /*
+ * Free a scheduler.
+ * Arguments:
+ *     scheduler_t *sched - Self reference.
+ */
+void free_scheduler(scheduler_t *sched) {
+    if(!sched) return;
+
+    free_task(sched->current);
+    free_queue(sched->run_queue);
+    free(sched);
+}
+
+/*
  * Spawn a new task (add it to the run queue).
  * Arguments:
  *     scheduler_t *sched - Self reference.
  *     task_t *task - Task to spawn.
  */
 void scheduler_spawn(scheduler_t *sched, task_t *task) {
+    if(!sched || !task) return;
+
+    task->state = Ready;
     queue_push(sched->run_queue, task);
 }
 
@@ -34,11 +50,21 @@ void scheduler_spawn(scheduler_t *sched, task_t *task) {
  *     scheduler_t *sched - Self reference.
  */
 void scheduler_run(scheduler_t *sched) {
+    if(!sched) return;
     while(sched->run_queue->size > 0) {
         task_t *next = queue_pop(sched->run_queue);
+        sched->current = next;
+
         if(next) {
-            sched->current = next;
+            next->state = Running;
             context_switch(&sched->main_sp, next->sp);
+        
+            if(next->state == Done) {
+                free_task(next);
+                sched->current = NULL;
+            } else {
+                queue_push(sched->run_queue, next);
+            }
         }
     }
 }
@@ -48,9 +74,23 @@ void scheduler_run(scheduler_t *sched) {
  * Arguments:
  *     scheduler_t *sched - Self reference.
  */
-void yield(scheduler_t *sched) {
+void scheduler_yield(scheduler_t *sched) {
+    if(!sched) return;
     if(sched->current) {
-        queue_push(sched->run_queue, sched->current);
+        sched->current = Waiting;
+        context_switch(&sched->current->sp, sched->main_sp);
+    }
+}
+
+/*
+ * Mark the current running task as Done.
+ * Arguments:
+ *     scheduler_t *sched - Self reference.
+ */
+void scheduler_exit(scheduler_t *sched) {
+    if(!sched) return;
+    if(sched->current) {
+        sched->current->state = Done;
         context_switch(&sched->current->sp, sched->main_sp);
     }
 }

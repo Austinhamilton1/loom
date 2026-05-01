@@ -18,6 +18,13 @@ typedef struct {
 scheduler_t *init_scheduler();
 
 /*
+ * Free a scheduler.
+ * Arguments:
+ *     scheduler_t *sched - Self reference.
+ */
+void free_scheduler(scheduler_t *sched);
+
+/*
  * Spawn a new task (add it to the run queue).
  * Arguments:
  *     scheduler_t *sched - Self reference.
@@ -37,6 +44,13 @@ void scheduler_run(scheduler_t *sched);
  * Arguments:
  *     scheduler_t *sched - Self reference.
  */
-void yield(scheduler_t *sched);
+void scheduler_yield(scheduler_t *sched);
+
+/*
+ * Mark the current running task as Done.
+ * Arguments:
+ *     scheduler_t *sched - Self reference.
+ */
+void scheduler_exit(scheduler_t *sched);
 
 #endif

@@ -15,6 +15,13 @@
 char *alloc_stack();
 
 /*
+ * Free a stack.
+ * Arguments:
+ *     char *stack - Self reference.
+ */
+void free_stack(char *stack);
+
+/*
  * Initialize a task's stack for the first call.
  * Arguments:
  *     task_t *task - Task to initialize.
